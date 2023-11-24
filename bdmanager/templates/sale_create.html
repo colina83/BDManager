@@ -15,6 +15,9 @@
                             <div class="mb-3">
                                 {{ form.project.label_tag }}
                                 {{ form.project }}
+                                <label for="project_size">Project Size:</label>
+                                <input type="number" id="project_size" name="project_size" value="{{ project_size }}" disabled>
+                                
                             </div>
                             <div class="mb-3">
                                 {{ form.company.label_tag }}
@@ -34,7 +37,10 @@
                             </div>
                             <div class="mb-3">
                                 {{ form.license_area.label_tag }}
-                                {{ form.license_area }}
+                                {{ form.license_area }}                                
+                                <div id="warning-message" class="alert alert-warning" role="alert" style="display: none;">
+                                    The Selected License Volume is larger than the project size in the Database.
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">                            
@@ -72,10 +78,11 @@
                 var licenseArea = parseFloat($('#id_license_area').val());
                 var unitRate = parseFloat($('#id_unit_rate_0').val());
                 var probability = parseFloat($('#id_probability').val());
-
-                var estimatedValueFieldID = '[id^=id_estimated_value]';
-                var estimatedWeightedValueFieldID = '[id^=id_weighted_value]';
-                var tgsNetValueFieldID = '[id^=id_tgs_net_value]';
+                console.log('Probability:', probability);
+                console.log('unitRate:', unitRate);
+                var estimatedValueFieldID = '#id_estimated_value_0';
+                var estimatedWeightedValueFieldID = '#id_weighted_value_0';
+                var tgsNetValueFieldID = '#id_tgs_net_value_0';
 
                 if (!isNaN(licenseArea) && !isNaN(unitRate)) {
                     var estimatedValue = licenseArea * unitRate;
@@ -92,7 +99,8 @@
                     $(tgsNetValueFieldID).val(tgsnetValue.toFixed(2));
                 }
             });
-    
+        }
+
         $('#id_project').change(function() {
             var projectId = $(this).val();
 
@@ -124,9 +132,47 @@
         });
     });
 
+    $(document).ready(function() {
+        function checkProjectSize() {
+            var projectId = $('#id_project').val();
+            var licenseArea = parseFloat($('#id_license_area').val());
     
-
-
+            $.ajax({
+                type: 'GET',
+                url: '/projectmanager/get_project_size/',
+                data: {
+                    'project_id': projectId
+                },
+                success: function(response) {
+                    console.log('Response:', response);
+                    var projectSizeFromDB = parseFloat(response.project_size);
+                    $('#project_size').val(projectSizeFromDB);  // Set project size in the input field
+    
+                    if (!isNaN(licenseArea) && !isNaN(projectSizeFromDB) && licenseArea > projectSizeFromDB) {
+                        $('#warning-message').show();  // Show warning message
+                    } else {
+                        $('#warning-message').hide();  // Hide warning message
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log(errmsg);
+                }
+            });
+        }
+    
+        // Check when the project changes
+        $('#id_project').change(checkProjectSize);
+    
+        // Check when the license area is changed
+        $('#id_license_area').on('input', checkProjectSize);
+    
+        // Additionally, trigger the check initially if both project ID and license area have values
+        var projectId = $('#id_project').val();
+        var licenseArea = $('#id_license_area').val();
+        if (projectId && licenseArea) {
+            checkProjectSize();
+        }
+    });
 
 
 </script>

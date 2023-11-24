@@ -65,9 +65,9 @@ class SaleForm(forms.ModelForm):
             'status': Select(attrs={'class': 'form-control'}),
             'probability': TextInput(attrs={'class': 'form-control', 'id':'id_probability'}),
             'license_area': TextInput(attrs={'class': 'form-control', 'id': 'id_license_area'}),
-            'unit_rate': MoneyWidget(attrs={'class': 'form-control', 'rows': 3, 'id': 'id_unit_rate'}),
-            'estimated_value': MoneyWidget(attrs={'class': 'form-control', 'rows': 3, 'id': 'id_estimated_value'}),
+            'unit_rate': MoneyWidget(attrs={'class': 'form-control', 'rows': 3, 'id': 'id_unit_rate'},default_currency='USD'),
+            'estimated_value': MoneyWidget(attrs={'class': 'form-control', 'rows': 3, 'id': 'id_estimated_value'},default_currency='USD'),
             'sale_date': DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'weighted_value': MoneyWidget(attrs={'class': 'form-control', 'rows': 3, 'id': 'id_weighted_value'}),
-            'tgs_net_value': MoneyWidget(attrs={'class': 'form-control', 'rows': 3, 'id': 'id_tgs_net_value'}),
+            'weighted_value': MoneyWidget(attrs={'class': 'form-control', 'rows': 3, 'id': 'id_weighted_value'},default_currency='USD'),
+            'tgs_net_value': MoneyWidget(attrs={'class': 'form-control', 'rows': 3, 'id': 'id_tgs_net_value'},default_currency='USD'),
         }

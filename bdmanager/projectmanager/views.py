@@ -3,6 +3,9 @@ from .forms import PermitForm, ProjectForm, SaleForm
 from django.contrib import messages
 from django.http import JsonResponse
 from .models import Project
+
+
+
 # Create your views here.
 
 def permit_create(request):
@@ -40,9 +43,9 @@ def project_form(request):
 def sale_form(request):
     if request.method == 'POST':
         form = SaleForm(request.POST)
-        print(form.errors)
+        print(request.POST) 
         if form.is_valid():
-            sale = form.save(commit=False)            
+            sale = form.save(commit=False)                       
             sale.owner = request.user  # Assigning the current user to the creator    
             sale.save()
             #Show a success message
@@ -68,4 +71,19 @@ def get_partner_share(request):
         
     else:
         return JsonResponse({'error': 'Invalid request'}, status=400)
-            
+
+def get_project_size(request):
+    if request.method == 'GET'and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        project_id = request.GET.get('project_id') # Get Project ID from AJAX request
+        
+        try:
+            project = Project.objects.get(pk=project_id) # Get the project object            
+            project_size = project.project_size # Get the partner share
+            print(project_size)
+            # Return the Partner Share as a JSON Response
+            return JsonResponse({'project_size': project_size})
+        except Project.DoesNotExist:
+            return JsonResponse({'error': 'Project not found'}, status=404)
+        
+    else:
+        return JsonResponse({'error': 'Invalid request'}, status=400)
