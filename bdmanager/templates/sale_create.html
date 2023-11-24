@@ -32,12 +32,12 @@
                                 {{ form.sale_date.label_tag }}
                                 {{ form.sale_date }}
                             </div>
-                        </div>
-                        <div class="col-md-6">
                             <div class="mb-3">
                                 {{ form.license_area.label_tag }}
                                 {{ form.license_area }}
                             </div>
+                        </div>
+                        <div class="col-md-6">                            
                             <div class="mb-3" >
                                 {{ form.unit_rate.label_tag }}
                                 {{ form.unit_rate }}
@@ -49,6 +49,10 @@
                             <div class="mb-3" >
                                 {{ form.weighted_value.label_tag }}
                                 {{ form.weighted_value }}
+                            </div>
+                            <div class="mb-3" >
+                                {{ form.tgs_net_value.label_tag }}
+                                {{ form.tgs_net_value }}
                             </div>
                         </div>
                     </div>
@@ -62,33 +66,39 @@
 <script>
     $(document).ready(function() {
         var isInputHandlerAttached = false;
+        
         function attachInputEventHandler() {
-            $('[id^=id_probability], [id^=id_license_area], [id^=id_unit_rate]').on('input', function() {
+            $('[id^=id_probability], [id^=id_license_area], [id^=id_unit_rate], [id^=id_tgs_net_value]').on('input', function() {
                 var licenseArea = parseFloat($('#id_license_area').val());
                 var unitRate = parseFloat($('#id_unit_rate_0').val());
                 var probability = parseFloat($('#id_probability').val());
-    
+
                 var estimatedValueFieldID = '[id^=id_estimated_value]';
                 var estimatedWeightedValueFieldID = '[id^=id_weighted_value]';
-    
+                var tgsNetValueFieldID = '[id^=id_tgs_net_value]';
+
                 if (!isNaN(licenseArea) && !isNaN(unitRate)) {
                     var estimatedValue = licenseArea * unitRate;
                     $(estimatedValueFieldID).val(estimatedValue.toFixed(2));
                 }
                 if (!isNaN(licenseArea) && !isNaN(unitRate) && !isNaN(probability) && !isNaN(globalPartnerShare)) {
                     var prob = probability / 100;
-                    var weightedValue = licenseArea * unitRate * prob * globalPartnerShare;
+                    var weightedValue = licenseArea * unitRate * prob 
                     $(estimatedWeightedValueFieldID).val(weightedValue.toFixed(2));
                 }
+                if (!isNaN(licenseArea) && !isNaN(unitRate) && !isNaN(probability) && !isNaN(globalPartnerShare)) {
+                    var prob = probability / 100;
+                    var tgsnetValue = licenseArea * unitRate * prob * globalPartnerShare;
+                    $(tgsNetValueFieldID).val(tgsnetValue.toFixed(2));
+                }
             });
-        }
-        $('#id_project').change(function() { // Assuming id_project is the ID of your project select input
-            var projectId = $(this).val(); // Get the selected project ID          
-            
-            // Make an AJAX request to fetch partner_share from the server
+    
+        $('#id_project').change(function() {
+            var projectId = $(this).val();
+
             $.ajax({
                 type: 'GET',
-                url: '/projectmanager/get_partner_share/', // Replace with your endpoint URL
+                url: '/projectmanager/get_partner_share/',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 },
@@ -96,28 +106,27 @@
                     'project_id': projectId
                 },
                 success: function(response) {
-                    // Update calculations with partner_share value from the server response
-                    var partnerShare = parseFloat(response.partner_share);                    
-                    globalPartnerShare = partnerShare; // Store in global variable
-                        // Update calculations with partner_share value from the server response
-                   
-                    // Check if the input event handler is already attached
+                    var partnerShare = parseFloat(response.partner_share);
+                    globalPartnerShare = partnerShare;
+
                     if (!isInputHandlerAttached) {
-                        // Attach the input event handler
                         attachInputEventHandler();
                         isInputHandlerAttached = true;
-                        }
+                    } else {
+                        // Trigger input event to recalculate values if the handler is already attached
+                        $('[id^=id_probability]').trigger('input');
+                    }
                 },
                 error: function(xhr, errmsg, err) {
-                    // Handle error if needed
                     console.log(errmsg);
                 }
             });
         });
-        // Other parts of your existing JavaScript for real-time calculations
     });
 
     
+
+
 
 
 </script>

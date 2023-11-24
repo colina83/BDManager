@@ -116,6 +116,7 @@ class Sale(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)    
     sale_date = models.DateField()
+    tgs_net_value = MoneyField(max_digits=10, decimal_places=2, default_currency='USD', blank=True, null=True)
     
     
             

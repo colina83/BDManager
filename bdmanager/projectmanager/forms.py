@@ -56,7 +56,8 @@ class SaleForm(forms.ModelForm):
             'unit_rate',
             'estimated_value',
             'sale_date',
-            'weighted_value'
+            'weighted_value',
+            'tgs_net_value'
         ]
         widgets = {
             'project': Select(attrs={'class': 'form-control', 'id':'id_project'}),
@@ -68,4 +69,5 @@ class SaleForm(forms.ModelForm):
             'estimated_value': MoneyWidget(attrs={'class': 'form-control', 'rows': 3, 'id': 'id_estimated_value'}),
             'sale_date': DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'weighted_value': MoneyWidget(attrs={'class': 'form-control', 'rows': 3, 'id': 'id_weighted_value'}),
+            'tgs_net_value': MoneyWidget(attrs={'class': 'form-control', 'rows': 3, 'id': 'id_tgs_net_value'}),
         }

@@ -56,12 +56,11 @@ def sale_form(request):
 def get_partner_share(request):
     if request.method == 'GET'and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         project_id = request.GET.get('project_id') # Get Project ID from AJAX request
-        print(project_id)
+        
         try:
-            project = Project.objects.get(pk=project_id) # Get the project object
-            print(project)
+            project = Project.objects.get(pk=project_id) # Get the project object            
             partner_share = project.partner_share # Get the partner share
-            print(partner_share)
+            
             # Return the Partner Share as a JSON Response
             return JsonResponse({'partner_share': partner_share})
         except Project.DoesNotExist:
